@@ -1,0 +1,132 @@
+$colors: #fad390, #38ada9, #f7f1e3, #ff5252, #d1ccc0, #34ace0;
+
+.headline {
+  @for $i from 1 through length($colors) {
+    &:nth-child(#{$i}) {
+      --color: #{nth($colors, $i)};
+    }
+  }
+}
+
+// =========================
+// Headline animations
+// =========================
+
+.headline--blink {  
+  .char {
+    --dur: 0.8s;
+    --del: calc(var(--char-index) * 0.0125s);
+    --name: blink;
+    --tf: steps(1, start);
+    
+    opacity: 0;
+  }
+  
+  @keyframes blink {
+    50% { opacity: 1 }
+  }
+}
+
+.headline--break {
+  .char {
+    --dur: 2s;
+    --name: break-drop;
+    --td: ease;
+    
+    color: transparent;
+    overflow: visible;
+    
+    &:before,
+    &:after {
+      color: black;
+      visibility: visible;
+    } 
+    
+    &:before {
+      animation: break-left var(--dur) linear infinite;
+      clip-path: polygon(55% 0, 50% 25%, 55% 60%, 50% 120%, 0 100%, 0 0);
+      transform-origin: 0 100%;
+    } 
+    
+    &:after {
+      animation: break-right var(--dur) linear infinite;
+      clip-path: polygon(50% 0%, 100% 0, 100% 100%, 44% 120%, 53% 68%, 46% 22%);
+      transform-origin: 100% 100%;
+    } 
+  }
+  
+  @keyframes break-drop {
+    20% { transform: translateY(-100%); }
+    22% { transform: translateY(10%); }
+    25% { transform: translateY(-5%); }
+    30% { transform: translateY(0); }
+  }
+  
+  @keyframes break-left {
+    22% { transform: rotate(0) }
+    25% { transform: rotate(-8deg) }
+    28% { transform: rotate(-10deg) }
+    30%, 100% { transform: rotate(-5deg) }
+  }
+  
+  @keyframes break-right {
+    22% { transform: rotate(0) }
+    25% { transform: rotate(5deg) }
+    28% { transform: rotate(10deg) translateY(10%) }
+    30%, 100% { transform: rotate(4deg) translateY(5%) }
+  }
+}
+
+.headline--hide {
+  --dur: 4s;
+  
+  .word:after {
+    animation: hide-cover calc(var(--dur) * 2) ease-out infinite;
+    border-top: 1vmin solid black;
+    background-color: var(--color);
+    content: '';
+    height: 150%;
+    left: 0;
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    z-index: 2;
+  }
+  
+  .char {
+    --name: hide-jump;
+    --del: calc(var(--char-index) * 0.04s);
+    --td: cubic-bezier(0.215, 0.61, 0.355, 1);
+    --dir: alternate;
+    
+    transform-origin: 50% 100%;
+    
+    &[data-char="i"]:after {
+      --name: hide-peek;
+      --dir: alternate;
+      
+      animation: var(--name) var(--dur) var(--td) infinite var(--dir);
+      content: attr(data-char);
+      visibility: visible;
+    }
+  }
+  
+  @keyframes hide-jump {
+    0%, 10% { transform: translateY(0) }
+    15% { transform: translateY(-25%) }
+    20%, 100% { transform: translateY(100%) }
+  }
+  
+  @keyframes hide-peek {
+    0%, 35% { transform: translateY(0) }
+    40%, 60% { transform: translateY(-40%) }
+    70%, 90% { transform: translateY(-45%) skewY(10deg) }
+    95%, 100% { transform: translateY(-46%) skewY(-10deg) }
+  }
+  
+  @keyframes hide-cover {
+    0%, 7% { transform: scaleX(0) }
+    8%, 95% { transform: scaleX(1) }
+    98%, 100% { transform: scaleX(0) }
+  }
+}
